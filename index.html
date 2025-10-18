@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="uk">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Оцінювання обізнаності у сфері кібербезпеки</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+		<style>
+			@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				min-height: 100vh;
+				padding: 40px 20px;
+				color: #1a202c;
+			}
+
+			.container {
+				max-width: 1600px;
+				margin: 0 auto;
+				background: rgba(255, 255, 255, 0.98);
+				border-radius: 24px;
+				box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+				padding: 48px;
+				backdrop-filter: blur(10px);
+			}
+
+			.header {
+				margin-bottom: 40px;
+			}
+
+			h1 {
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+				font-size: 36px;
+				font-weight: 700;
+				margin-bottom: 12px;
+				letter-spacing: -0.5px;
+			}
+
+			.subtitle {
+				color: #718096;
+				font-size: 16px;
+				font-weight: 400;
+			}
+
+			.toolbar {
+				display: flex;
+				gap: 12px;
+				margin-bottom: 32px;
+				flex-wrap: wrap;
+				padding: 24px;
+				background: linear-gradient(135deg, #f6f8fb 0%, #e9ecef 100%);
+				border-radius: 16px;
+				border: 1px solid rgba(0, 0, 0, 0.05);
+			}
+
+			button {
+				padding: 14px 28px;
+				border: none;
+				border-radius: 12px;
+				font-size: 15px;
+				font-weight: 600;
+				cursor: pointer;
+				font-family: 'Inter', sans-serif;
+				box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+			}
+
+			button:hover {
+				opacity: 0.9;
+			}
+
+			button:active {
+				opacity: 0.7;
+			}
+
+			.btn-success {
+				background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+				color: white;
+			}
+
+			.btn-primary {
+				background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+				color: white;
+			}
+
+			.btn-secondary {
+				background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+				color: white;
+			}
+
+			.btn-info {
+				background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+				color: white;
+			}
+
+			.btn-warning {
+				background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+				color: white;
+			}
+
+			.info-banner {
+				background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+				padding: 20px 24px;
+				border-radius: 16px;
+				margin-bottom: 32px;
+				color: #1e40af;
+				border-left: 4px solid #3b82f6;
+				font-size: 15px;
+				line-height: 1.6;
+				box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);
+			}
+
+			.tables-grid {
+				display: grid;
+				grid-template-columns: 1.2fr 1fr;
+				gap: 32px;
+				margin-bottom: 32px;
+			}
+
+			.card {
+				background: white;
+				border-radius: 20px;
+				overflow: hidden;
+				box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+				border: 1px solid rgba(0, 0, 0, 0.05);
+			}
+
+			.card-header {
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				padding: 20px 24px;
+				font-weight: 600;
+				font-size: 18px;
+				color: white;
+				letter-spacing: 0.3px;
+			}
+
+			.table-container {
+				overflow-x: auto;
+				max-height: 550px;
+			}
+
+			table {
+				width: 100%;
+				border-collapse: separate;
+				border-spacing: 0;
+			}
+
+			th,
+			td {
+				padding: 16px 20px;
+				text-align: left;
+				font-size: 14px;
+			}
+
+			th {
+				background: linear-gradient(to bottom, #f9fafb 0%, #f3f4f6 100%);
+				font-weight: 600;
+				color: #374151;
+				position: sticky;
+				top: 0;
+				z-index: 10;
+				border-bottom: 2px solid #e5e7eb;
+				text-transform: uppercase;
+				font-size: 12px;
+				letter-spacing: 0.5px;
+			}
+
+			td {
+				color: #4b5563;
+				border-bottom: 1px solid #f3f4f6;
+			}
+
+			tr:hover td {
+				background: #fef3c7;
+			}
+
+			tr:nth-child(even) td {
+				background: #fafafa;
+			}
+
+			tr:nth-child(even):hover td {
+				background: #fef3c7;
+			}
+
+			.summary-panel {
+				background: white;
+				padding: 28px;
+				border-radius: 16px;
+				margin-bottom: 24px;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+				border: 1px solid #e5e7eb;
+			}
+
+			.summary-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+				gap: 20px;
+			}
+
+			.summary-card {
+				background: #f9fafb;
+				padding: 20px 24px;
+				border-radius: 12px;
+				border: 1px solid #e5e7eb;
+			}
+
+			.summary-card:hover {
+				background: #f3f4f6;
+			}
+
+			.summary-label {
+				color: #6b7280;
+				font-size: 14px;
+				font-weight: 500;
+				margin-bottom: 12px;
+			}
+
+			.summary-value {
+				padding: 14px 24px;
+				border-radius: 8px;
+				font-weight: 700;
+				font-size: 28px;
+				text-align: center;
+				line-height: 1.3;
+			}
+
+			.badge-high {
+				background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+				color: white;
+			}
+
+			.badge-above-avg {
+				background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+				color: white;
+			}
+
+			.badge-medium {
+				background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+				color: white;
+			}
+
+			.badge-low {
+				background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+				color: white;
+			}
+
+			.badge-very-low {
+				background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+				color: white;
+			}
+
+			.status-bar {
+				padding: 16px 24px;
+				color: #64748b;
+				font-size: 14px;
+				text-align: center;
+				background: #f8fafc;
+				border-radius: 12px;
+				font-weight: 500;
+			}
+
+			.modal {
+				display: none;
+				position: fixed;
+				z-index: 1000;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.7);
+				backdrop-filter: blur(8px);
+				animation: fadeIn 0.3s;
+			}
+
+			@keyframes fadeIn {
+				from {
+					opacity: 0;
+				}
+				to {
+					opacity: 1;
+				}
+			}
+
+			.modal-content {
+				background: white;
+				margin: 60px auto;
+				padding: 0;
+				border-radius: 24px;
+				max-width: 900px;
+				max-height: 85vh;
+				overflow: hidden;
+				box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+				animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+			}
+
+			@keyframes slideUp {
+				from {
+					transform: translateY(50px);
+					opacity: 0;
+				}
+				to {
+					transform: translateY(0);
+					opacity: 1;
+				}
+			}
+
+			.modal-header {
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				padding: 32px;
+				color: white;
+			}
+
+			.modal-header h2 {
+				font-size: 28px;
+				font-weight: 700;
+				margin: 0;
+			}
+
+			.modal-body {
+				padding: 32px;
+				max-height: calc(85vh - 180px);
+				overflow-y: auto;
+			}
+
+			.close {
+				position: absolute;
+				right: 24px;
+				top: 24px;
+				font-size: 32px;
+				font-weight: 300;
+				cursor: pointer;
+				color: white;
+				width: 40px;
+				height: 40px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border-radius: 50%;
+			}
+
+			.close:hover {
+				background: rgba(255, 255, 255, 0.2);
+			}
+
+			.settings-section {
+				margin-bottom: 32px;
+				padding: 24px;
+				background: #f9fafb;
+				border-radius: 16px;
+				border: 1px solid #e5e7eb;
+			}
+
+			.settings-section h3 {
+				margin-bottom: 20px;
+				color: #1f2937;
+				font-size: 20px;
+				font-weight: 600;
+				padding-bottom: 12px;
+				border-bottom: 2px solid #e5e7eb;
+			}
+
+			.setting-row {
+				display: grid;
+				grid-template-columns: 2fr repeat(3, 1fr);
+				gap: 16px;
+				align-items: center;
+				margin-bottom: 16px;
+				padding: 16px;
+				background: white;
+				border-radius: 12px;
+				border: 1px solid #e5e7eb;
+			}
+
+			.setting-row:hover {
+				border-color: #667eea;
+			}
+
+			.setting-row label {
+				font-weight: 500;
+				color: #374151;
+			}
+
+			input[type='number'] {
+				padding: 12px 16px;
+				border: 2px solid #e5e7eb;
+				border-radius: 10px;
+				font-size: 15px;
+				font-family: 'Inter', sans-serif;
+				background: white;
+			}
+
+			input[type='number']:focus {
+				outline: none;
+				border-color: #667eea;
+			}
+
+			.modal-footer {
+				display: flex;
+				gap: 12px;
+				justify-content: flex-end;
+				padding: 24px 32px;
+				background: #f9fafb;
+				border-top: 1px solid #e5e7eb;
+			}
+
+			.file-input {
+				display: none;
+			}
+
+			@media (max-width: 1200px) {
+				.tables-grid {
+					grid-template-columns: 1fr;
+				}
+
+				.container {
+					padding: 32px 24px;
+				}
+			}
+
+			@media (max-width: 768px) {
+				h1 {
+					font-size: 28px;
+				}
+
+				.toolbar {
+					padding: 16px;
+				}
+
+				button {
+					padding: 12px 20px;
+					font-size: 14px;
+				}
+
+				.setting-row {
+					grid-template-columns: 1fr;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="header">
+				<h1>🛡️ Оцінювання обізнаності у сфері кібербезпеки</h1>
+				<p class="subtitle">
+					Система аналізу рівня обізнаності з використанням нечіткої логіки
+				</p>
+			</div>
+
+			<div class="toolbar">
+				<button class="btn-success" onclick="compute()">⚡ Обчислити</button>
+				<button
+					class="btn-primary"
+					onclick="document.getElementById('fileInput').click()"
+				>
+					📁 Імпорт з Excel
+				</button>
+				<button class="btn-secondary" onclick="generateDemo()">
+					🎲 Згенерувати демо
+				</button>
+				<button class="btn-info" onclick="exportExcel()">
+					💾 Експорт Excel
+				</button>
+				<button class="btn-warning" onclick="openSettings()">
+					⚙️ Налаштування
+				</button>
+			</div>
+
+			<input
+				type="file"
+				id="fileInput"
+				class="file-input"
+				accept=".xlsx,.xls"
+				onchange="importExcel(event)"
+			/>
+
+			<div class="info-banner">
+				💡 <strong>Інструкція:</strong> Імпортуйте Excel-файл або згенеруйте
+				демо-дані, потім натисніть кнопку "Обчислити". Налаштуйте вагові
+				коефіцієнти та пороги в розділі "Налаштування" для точної оцінки.
+			</div>
+
+			<div class="tables-grid">
+				<div class="card">
+					<div class="card-header">📊 Вхідні дані</div>
+					<div class="table-container">
+						<table id="inputTable">
+							<thead>
+								<tr>
+									<th>Група критеріїв</th>
+									<th>Критерій</th>
+									<th>c1</th>
+								</tr>
+							</thead>
+							<tbody></tbody>
+						</table>
+					</div>
+				</div>
+
+				<div class="card">
+					<div class="card-header">📈 Розраховані дані</div>
+					<div class="table-container">
+						<table id="calcTable">
+							<thead>
+								<tr>
+									<th>Параметр</th>
+									<th>c1</th>
+								</tr>
+							</thead>
+							<tbody></tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<div class="summary-panel">
+				<div class="summary-grid">
+					<div class="summary-card">
+						<div class="summary-label">Середній ϑ̅ по стовпцях</div>
+						<div class="summary-value" id="avgBadge">—</div>
+					</div>
+					<div class="summary-card">
+						<div class="summary-label">Рівень обізнаності (LFC)</div>
+						<div class="summary-value" id="lfcBadge">—</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="status-bar">✓ Готово до роботи</div>
+		</div>
+
+		<div id="settingsModal" class="modal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h2>⚙️ Налаштування системи</h2>
+					<span class="close" onclick="closeSettings()">&times;</span>
+				</div>
+
+				<div class="modal-body">
+					<div class="settings-section">
+						<h3>Вагові коефіцієнти v₁..v₄ (1..10)</h3>
+						<div class="setting-row">
+							<label>G1 — основи кібербезпеки</label>
+							<input type="number" id="w1" min="1" max="10" value="5" />
+						</div>
+						<div class="setting-row">
+							<label>G2 — захист персональних даних</label>
+							<input type="number" id="w2" min="1" max="10" value="5" />
+						</div>
+						<div class="setting-row">
+							<label>G3 — виявлення кіберзагроз</label>
+							<input type="number" id="w3" min="1" max="10" value="5" />
+						</div>
+						<div class="setting-row">
+							<label>G4 — підвищення обізнаності та реагування</label>
+							<input type="number" id="w4" min="1" max="10" value="5" />
+						</div>
+					</div>
+
+					<div class="settings-section">
+						<h3>Пороги S-сплайн (a, b, c) для груп</h3>
+						<div class="setting-row">
+							<label>G1</label>
+							<input type="number" id="t1a" step="0.1" value="7" />
+							<input type="number" id="t1b" step="0.1" value="38" />
+							<input type="number" id="t1c" step="0.1" value="69" />
+						</div>
+						<div class="setting-row">
+							<label>G2</label>
+							<input type="number" id="t2a" step="0.1" value="6" />
+							<input type="number" id="t2b" step="0.1" value="33" />
+							<input type="number" id="t2c" step="0.1" value="60" />
+						</div>
+						<div class="setting-row">
+							<label>G3</label>
+							<input type="number" id="t3a" step="0.1" value="5" />
+							<input type="number" id="t3b" step="0.1" value="27" />
+							<input type="number" id="t3c" step="0.1" value="49" />
+						</div>
+						<div class="setting-row">
+							<label>G4</label>
+							<input type="number" id="t4a" step="0.1" value="4" />
+							<input type="number" id="t4b" step="0.1" value="22" />
+							<input type="number" id="t4c" step="0.1" value="40" />
+						</div>
+					</div>
+				</div>
+
+				<div class="modal-footer">
+					<button class="btn-secondary" onclick="closeSettings()">
+						Скасувати
+					</button>
+					<button class="btn-success" onclick="saveSettings()">
+						💾 Зберегти
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<script src="index.js"></script>
+	</body>
+</html>
