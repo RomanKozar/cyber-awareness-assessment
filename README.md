@@ -5,8 +5,7 @@
 Система оцінювання рівня обізнаності у сфері кібербезпеки з використанням нечіткої логіки.
 
 ---
-[![Live Demo](https://img.shields.io/badge/demo-online-green.svg?style=for-the-badge)]([https://твоє-посилання-тут](https://romankozar.github.io/cyber-awareness-assessment/
-))
+[![Live Demo](https://img.shields.io/badge/demo-online-green.svg?style=for-the-badge)](https://romankozar.github.io/cyber-awareness-assessment/)
 
 ![Головна сторінка](preview.png)
 
