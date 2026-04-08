@@ -5,6 +5,7 @@
 Система оцінювання рівня обізнаності у сфері кібербезпеки з використанням нечіткої логіки.
 
 ---
+[![Live Demo](https://img.shields.io/badge/demo-online-green.svg?style=for-the-badge)](https://твоє-посилання-тут)
 
 ![Головна сторінка](preview.png)
 
